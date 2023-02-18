@@ -9,17 +9,6 @@ constexpr size_t WINDOW_SIZE = 1024;
 constexpr size_t BINS_NUM = 64;  // Should be a power of two. Actually can be dynamic but I did not research how that can be used
 
 
-static float GetModuleCeiledPowerOfTwo(float value) {
-	if (!value) {
-		return 0;
-	}
-	if (value < 0) {
-		return pow(2, ceil(log(-value) / log(2)));
-	}
-	return pow(2, ceil(log(value) / log(2)));
-}
-
-
 class CyclingBuffer {
 public:
 	CyclingBuffer(const vector<float>& data) : data(data) {};
@@ -128,7 +117,7 @@ void SlidingHistogramCalc::CalculateHistogram(float newValue) {
 	// Get step and min
 	// Just intuitively try to follow three sigma rule (two sigma with ceil rounding on top)
 	const float actualBinSize = actualDeviation * 4 / histogram.data.size();
-	const float roundedBinSize = GetModuleCeiledPowerOfTwo(actualBinSize);
+	const float roundedBinSize = pow(2, ceil(log(actualBinSize) / log(2)));
 	const float roundedMean = ceil(actualMean / roundedBinSize) * roundedBinSize;
 	const float roundedMinValue = roundedMean - roundedBinSize * histogram.data.size() / 2;
 
